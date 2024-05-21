@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
-//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 public class EmployeeController {
 
     @Autowired
@@ -49,27 +49,15 @@ public class EmployeeController {
         return employeeService.getAllEmployees().stream().filter(e -> e.getCity().equals(city)).toList();
     }
 
-    // Example 2. Return a list of employees younger than 30
-    @GetMapping("/employees/age/{age}")
-    public List<Employee> getEmployeesByAge(@PathVariable Integer age){
-        return employeeService.getAllEmployees().stream().filter(e -> e.getAge() < 30).toList();
-    }
-
-    // Example 3. Return a map of employees, group by city and save their names as value
+    // Example 3. Return a map of employees, group by city and save a list of employees as value
     @GetMapping("/employees/grouped-city")
     public Map<String, List<Employee>> groupEmployeesByCity(){
         return employeeService.getAllEmployees().stream().collect(Collectors.groupingBy(Employee::getCity, Collectors.mapping(employee -> employee, Collectors.toList())));
     }
 
-    // Example 4. Return the number of employees from Merida
-    @GetMapping("/employees/number/{city}")
-    public Long employeesPerCity(@PathVariable String city){
-        return employeeService.getAllEmployees().stream().filter(employee -> employee.getCity().equals(city)).count();
-    }
-
-    // Example 8. Return a list of all the cities, no duplicated values
+    // Example. Return a map of all the cities and the number of employees from each city
     @GetMapping("/employees/cities")
-    public List<String> getAllCities(){
-        return employeeService.getAllEmployees().stream().map(Employee::getCity).distinct().toList();
+    public Map<String, Long> getAllCities(){
+        return employeeService.getAllEmployees().stream().collect(Collectors.groupingBy(Employee::getCity, Collectors.counting()));
     }
 }
